@@ -1,5 +1,5 @@
 name: AgentsReady check
-description: Score your website for AI agents and AI search (ChatGPT, Claude, Perplexity). Fails the build when the score drops or agents are blocked.
+description: Score your site for AI agents and AI search (ChatGPT, Claude, Perplexity). Fails the build when agents get blocked.
 author: Sneha (itspsneha)
 branding:
   icon: check-circle
