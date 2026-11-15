@@ -1,0 +1,61 @@
+name: AgentsReady check
+description: Score your website for AI agents and AI search (ChatGPT, Claude, Perplexity). Fails the build when the score drops or agents are blocked.
+author: Sneha (itspsneha)
+branding:
+  icon: check-circle
+  color: blue
+
+inputs:
+  domain:
+    description: The site to check, for example example.com
+    required: true
+  job:
+    description: "The job an agent tries on the site: recommend, buy, signup, api or personal. Leave empty to let AgentsReady pick."
+    required: false
+    default: ""
+  fail-under:
+    description: Fail the step when the score is below this number (0 to 100). 0 never fails on score.
+    required: false
+    default: "0"
+  fail-on-bot-wall:
+    description: Fail the step when a firewall or bot wall blocks AI agents.
+    required: false
+    default: "true"
+  comment:
+    description: On pull requests, post the result as a comment (updated in place on later runs). Needs `pull-requests: write`.
+    required: false
+    default: "true"
+  github-token:
+    description: Token used to comment on pull requests.
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  score:
+    description: Score out of 100
+    value: ${{ steps.check.outputs.score }}
+  level:
+    description: Readiness level, for example "Mostly ready"
+    value: ${{ steps.check.outputs.level }}
+  bot-wall:
+    description: true when a bot wall blocks AI agents
+    value: ${{ steps.check.outputs.bot_wall }}
+  report:
+    description: Link to the full public report
+    value: ${{ steps.check.outputs.report }}
+
+runs:
+  using: composite
+  steps:
+    - id: check
+      shell: bash
+      env:
+        DOMAIN: ${{ inputs.domain }}
+        JOB: ${{ inputs.job }}
+        FAIL_UNDER: ${{ inputs.fail-under }}
+        FAIL_ON_WALL: ${{ inputs.fail-on-bot-wall }}
+        COMMENT: ${{ inputs.comment }}
+        GH_TOKEN: ${{ inputs.github-token }}
+        PR: ${{ github.event.pull_request.number }}
+        REPO: ${{ github.repository }}
+      run: bash "$GITHUB_ACTION_PATH/check.sh"

@@ -1,0 +1,17 @@
+name: Test
+on:
+  push:
+  pull_request:
+permissions:
+  pull-requests: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: agents
+        uses: ./
+        with:
+          domain: agentsready.dev
+          fail-under: 50
+      - run: echo "Score ${{ steps.agents.outputs.score }}"
